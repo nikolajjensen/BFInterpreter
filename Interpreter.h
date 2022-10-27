@@ -18,28 +18,37 @@ namespace Interpreter {
   /**
    * @brief Helper function to make a 'right'-jump to a matching bracket in the BF code.
    * 
-   * When called, the provided Execution object's program_ctr will be 
-   * incremented so that it corresponds to the index just after the matching ']'.
+   * Returns the program counter corresponding to the index just after the matching ']'.
    * 
-   * In case there is no matching bracket, the Execution's program_ctr will be equal to the length of the program.
+   * In case there is no matching bracket, the length of the program will be returned.
    * 
-   * @param execution The Execution which should be updated.
+   * @param program The program in which to find a matching bracket.
+   * @param program_ctr The initial program counter from which to start searching for a matching bracket.
    * @param level Should be called with 0. Used to track matching brackets using recursive calls of the function.
+   * @return The program counter corresponding to the entry in the program just after the closing bracket.
    */
-  void jump_right(Execution &execution, int level = 0);
+  int jump_right(const std::string& program, int program_ctr, int level = 0);
 
   /**
    * @brief Helper function to make a 'left'-jump to a matching bracket in the BF code.
    * 
-   * When called, the provided Execution object's program_ctr will be 
-   * decremented so that it corresponds to the index just after the matching '['.
+   * Returns the program counter corresponding to the index just after the matching '['.
    * 
-   * In case there is no matching bracket, the Execution's program_ctr will be equal to -1.
+   * In case there is no matching bracket, -1 will be returned.
    * 
-   * @param execution The Execution which should be updated.
+   * @param program The program in which to find a matching bracket.
+   * @param program_ctr The initial program counter from which to start searching for a matching bracket.
    * @param level Should be called with 0. Used to track matching brackets using recursive calls of the function.
+   * @return The program counter corresponding to the entry in the program just after the closing bracket.
    */
-  void jump_left(Execution &execution, int level = 0);
+  int jump_left(const std::string& program, int program_ctr, int level = 0);
+
+  /**
+   * @brief Create a bracket lookup table for use in execution.
+   * 
+   * @param execution The Execution whose bracket_table will be updated.
+   */
+  void create_bracket_table(Execution &execution);
 
   /**
    * @brief Process a single character of the BF program.

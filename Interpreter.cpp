@@ -9,6 +9,8 @@ Execution Interpreter::execute(const std::string& program) {
 Execution Interpreter::execute(const std::string& program, std::map<unsigned int, int> &memory) {
   Execution execution(program, memory);
 
+  create_bracket_table(execution);
+
   while(execution.program_ctr >= 0 && execution.program_ctr < program.length()) {
     progress(execution);
   }
@@ -22,18 +24,20 @@ Execution Interpreter::execute(const std::string& program, std::map<unsigned int
  * 
  * Many prominent changes have been mad; for details see Interpreter.h.
  */
-void Interpreter::jump_right(Execution &execution, int level) {
-  char c = execution.program[execution.program_ctr];
+int Interpreter::jump_right(const std::string& program, int program_ctr, int level) {
+  char c = program[program_ctr];
   if(c == ']') {
     level--;
   } else if (c == '[') {
     level++;
   }
 
-  execution.program_ctr++;
-  if(!((c == ']' && level == -1) || (execution.program_ctr == execution.program.length()))) {
-    jump_right(execution, level);
+  program_ctr++;
+  if(!((c == ']' && level == -1) || (program_ctr == program.length()))) {
+    return jump_right(program, program_ctr, level);
   }
+
+  return program_ctr;
 }
 
 /**
@@ -42,8 +46,8 @@ void Interpreter::jump_right(Execution &execution, int level) {
  * 
  * Many prominent changes have been mad; for details see Interpreter.h.
  */
-void Interpreter::jump_left(Execution &execution, int level) {
-  char c = execution.program[execution.program_ctr];
+int Interpreter::jump_left(const std::string& program, int program_ctr, int level) {
+  char c = program[program_ctr];
   if(c == '[') {
     level--;
   } else if (c == ']') {
@@ -51,12 +55,29 @@ void Interpreter::jump_left(Execution &execution, int level) {
   }
 
   if(c == '[' && level == -1) {
-    execution.program_ctr++;
-  } else if(execution.program_ctr == 0) {
-    execution.program_ctr = -1;
+    program_ctr++;
+  } else if(program_ctr == 0) {
+    program_ctr = -1;
   } else {
-    execution.program_ctr--;
-    jump_left(execution, level);
+    program_ctr--;
+    return jump_left(program, program_ctr, level);
+  }
+
+  return program_ctr;
+}
+
+
+void Interpreter::create_bracket_table(Execution &execution) {
+  execution.bracket_table.clear();
+  
+  for(std::size_t i = 0; i < execution.program.length(); ++i) {
+    char c = execution.program[i];
+
+    if(c == '[') {
+      execution.bracket_table[i] = jump_right(execution.program, i + 1);
+    } else if (c == ']') {
+      execution.bracket_table[i] = jump_left(execution.program, i - 1);
+    }
   }
 }
 
@@ -92,16 +113,14 @@ void Interpreter::progress(Execution &execution) {
     break;
   case '[':
     if(execution.getMemory(execution.memory_ptr) == 0) {
-      execution.program_ctr++;
-      jump_right(execution);
+      execution.program_ctr = execution.bracket_table[execution.program_ctr];
     } else {
       execution.program_ctr++;
     }
     break;
   case ']':
     if(execution.getMemory(execution.memory_ptr) != 0) {
-      execution.program_ctr--;
-      jump_left(execution);
+      execution.program_ctr = execution.bracket_table[execution.program_ctr];
     } else {
       execution.program_ctr++;
     }

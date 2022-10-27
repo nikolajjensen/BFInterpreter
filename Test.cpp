@@ -4,21 +4,17 @@
 #include "Interpreter.h"
 #include "Utils.h"
 
-bool Tests::helpers::jump_right(const std::string& program, int initial_program_ctr, int expected_program_ctr) {
-  Execution e(program);
-  e.program_ctr = initial_program_ctr;
-  Interpreter::jump_right(e);
-  bool success = (e.program_ctr == expected_program_ctr);
-  std::cout << program << " => " << e.program_ctr << " == " << expected_program_ctr << " ? " << (success ? "PASS" : "FAIL") << std::endl;
+bool Tests::helpers::jump_right(const std::string& program, int program_ctr, int expected_program_ctr) {
+  program_ctr = Interpreter::jump_right(program, program_ctr);
+  bool success = (program_ctr == expected_program_ctr);
+  std::cout << program << " => " << program_ctr << " == " << expected_program_ctr << " ? " << (success ? "PASS" : "FAIL") << std::endl;
   return success;
 }
 
-bool Tests::helpers::jump_left(const std::string& program, int initial_program_ctr, int expected_program_ctr) {
-  Execution e(program);
-  e.program_ctr = initial_program_ctr;
-  Interpreter::jump_left(e);
-  bool success = (e.program_ctr == expected_program_ctr);
-  std::cout << program << " => " << e.program_ctr << " == " << expected_program_ctr << " ? " << (success ? "PASS" : "FAIL") << std::endl;
+bool Tests::helpers::jump_left(const std::string& program, int program_ctr, int expected_program_ctr) {
+  program_ctr = Interpreter::jump_left(program, program_ctr);
+  bool success = (program_ctr == expected_program_ctr);
+  std::cout << program << " => " << program_ctr << " == " << expected_program_ctr << " ? " << (success ? "PASS" : "FAIL") << std::endl;
   return success;
 }
 

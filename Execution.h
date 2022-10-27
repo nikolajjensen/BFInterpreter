@@ -11,6 +11,7 @@ struct Execution {
   int program_ctr;
   unsigned int memory_ptr;
   std::map<unsigned int, int> memory;
+  std::map<int, int> bracket_table;
 
   /**
    * @brief Construct a new Execution object
